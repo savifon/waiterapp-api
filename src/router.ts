@@ -1,63 +1,66 @@
+import path from 'node:path';
+
 import {Router} from 'express';
+import multer from 'multer';
+
+import { createCategory } from './app/useCases/categories/createCategory';
+import { listCategories } from './app/useCases/categories/listCategories';
+import { createProduct } from './app/useCases/products/createProduct';
+import { listProducts } from './app/useCases/products/listProducts';
+import { listProductsByCategory } from './app/useCases/categories/listProductsByCategory';
+import { listOrders } from './app/useCases/orders/listOrders';
+import { createOrder } from './app/useCases/orders/createOrder';
+import { cancelOrder } from './app/useCases/orders/cancelOrder';
+import { changeOrderStatus } from './app/useCases/orders/changeOrderStatus';
+import { deleteCategory } from './app/useCases/categories/deleteCategory';
+import { deleteProduct } from './app/useCases/products/deleteProduct';
+import { updateProduct } from './app/useCases/products/updateProduct';
 
 export const router = Router();
 
-// list categories
-router.get('/categories', (req, res) => {
-  console.log('ok');
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, callback) {
+      callback(null, path.resolve(__dirname, '..', 'uploads'));
+    },
+    filename(req, file, callback) {
+      callback(null, `${Date.now()}-${file.originalname}`);
+    }
+  })
 });
+
+// list categories
+router.get('/categories', listCategories);
 
 // create category
-router.post('/categories', (req, res) => {
-  console.log('ok');
-});
+router.post('/categories', createCategory);
 
 // delete category
-router.delete('/categories/:categoryId', (req, res) => {
-  console.log('ok');
-});
+router.delete('/categories/:categoryId', deleteCategory);
 
 // list products
-router.get('/products', (req, res) => {
-  console.log('ok');
-});
+router.get('/products', listProducts);
 
 // create product
-router.post('/products', (req, res) => {
-  console.log('ok');
-});
+router.post('/products', upload.single('image'), createProduct);
 
 // update product
-router.put('/products/:productId', (req, res) => {
-  console.log('ok');
-});
+router.put('/products/:productId', upload.single('image'), updateProduct);
 
 // delete product
-router.delete('/products/:productId', (req, res) => {
-  console.log('ok');
-});
+router.delete('/products/:productId', deleteProduct);
 
 // get products by category
-router.get('/categories/:categoryId/products', (req, res) => {
-  console.log('ok');
-});
+router.get('/categories/:categoryId/products', listProductsByCategory);
 
 // list orders
-router.get('/orders', (req, res) => {
-  console.log('ok');
-});
+router.get('/orders', listOrders);
 
 // create orders
-router.post('/orders', (req, res) => {
-  console.log('ok');
-});
+router.post('/orders', createOrder);
 
 // change order status
-router.patch('/orders/:orderId', (req, res) => {
-  console.log('ok');
-});
+router.patch('/orders/:orderId', changeOrderStatus);
 
 // delete/cancel order
-router.delete('/orders/:orderId', (req, res) => {
-  console.log('ok');
-});
+router.delete('/orders/:orderId', cancelOrder);
