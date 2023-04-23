@@ -1,14 +1,18 @@
 import path from 'node:path';
+import http from 'node:http';
 
 import express from 'express';
 import mongoose from 'mongoose';
+import { Server } from 'socket.io';
 
 import { router } from './router';
 
+export const app = express();
+export const server = http.createServer(app);
+export const io = new Server(server);
 
 mongoose.connect('mongodb://localhost:27017')
   .then(() => {
-    const app = express();
     const port = 3003;
 
     app.use((req, res, next) => {
@@ -21,7 +25,7 @@ mongoose.connect('mongodb://localhost:27017')
     app.use(express.json());
     app.use(router);
 
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(`💫 Servidor funcionando em: http://localhost:${port}`);
     });
   })
